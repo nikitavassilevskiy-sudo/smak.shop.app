@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Мой магазин</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f5fa;--card:#fff;--ink:#1b2133;--mute:#6b7389;--line:#e4e7f0;--acc:#3b4cf0;--acc-ink:#fff;--soft:#e9ecff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.4;padding-bottom:96px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:12px 16px 8px;display:flex;gap:10px;align-items:center}
+h1{font-size:20px;margin:0;font-weight:800;flex:1}
+.search{flex:1;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 12px;height:44px}
+.search input{border:0;background:none;outline:0;width:100%;color:var(--ink);font:inherit}
+main{padding:0 16px}
+.banners{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:8px -16px 0;padding:0 16px;scrollbar-width:none}
+.banners::-webkit-scrollbar{display:none}
+.banner{flex:0 0 100%;scroll-snap-align:center;border-radius:22px;padding:22px;min-height:150px;color:#fff;display:flex;flex-direction:column;justify-content:flex-end}
+.banner b{font-size:24px;font-weight:800;line-height:1.1}
+.banner span{opacity:.9;margin-top:6px}
+h2{font-size:17px;margin:22px 0 10px;font-weight:800}
+.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cat{border:0;border-radius:16px;background:var(--card);padding:12px 4px;color:var(--ink);font:inherit;font-size:12.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid var(--line)}
+.cat i{font-style:normal;font-size:24px;width:44px;height:44px;border-radius:14px;background:var(--soft);display:grid;place-items:center}
+.cat.on{border-color:var(--acc);background:var(--soft)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.item{background:var(--card);border-radius:20px;border:1px solid var(--line);padding:10px;display:flex;flex-direction:column}
+.pic{aspect-ratio:1;border-radius:14px;display:grid;place-items:center;font-size:44px;font-weight:800;color:rgba(255,255,255,.9)}
+.name{font-weight:700;margin:10px 2px 2px;min-height:40px}
+.stock{font-size:12px;color:var(--mute);margin:0 2px 6px}
+.tiers{font-size:12px;color:var(--mute);border-top:1px solid var(--line);margin:4px 2px 8px;padding-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:2px 8px}
+.tiers b{color:var(--ink)}
+.buy{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding:0 2px}
+.price{font-size:18px;font-weight:800}
+.price small{font-size:11px;color:var(--mute);font-weight:700}
+.add,.qty button{width:36px;height:36px;border-radius:12px;border:0;background:var(--acc);color:var(--acc-ink);font-size:20px;font-weight:700;line-height:1}
+.qty{display:flex;align-items:center;gap:8px;font-weight:800}
+.qty button.m{background:var(--soft);color:var(--acc)}
+.empty{text-align:center;color:var(--mute);padding:48px 16px}
+.row{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px;margin-bottom:10px}
+.row .pic{width:56px;font-size:22px;flex:none}
+.row .grow{flex:1;min-width:0}
+.total{display:flex;justify-content:space-between;font-size:18px;font-weight:800;margin:16px 4px}
+.cta{width:100%;height:50px;border:0;border-radius:16px;background:var(--acc);color:var(--acc-ink);font:inherit;font-weight:800;font-size:16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px}
+.panel p{margin:4px 0;color:var(--mute)}
+nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border:1px solid var(--line);border-radius:26px;display:flex;justify-content:space-around;padding:6px;box-shadow:0 8px 28px rgba(20,25,50,.14);z-index:6}
+nav button{flex:1;border:0;background:none;color:var(--mute);font:inherit;font-size:11px;font-weight:700;height:50px;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative}
+nav button span{font-size:20px;line-height:1}
+nav button.on{background:var(--acc);color:var(--acc-ink)}
+.badge{position:absolute;top:2px;right:calc(50% - 26px);background:#e5484d;color:#fff;border-radius:10px;font-size:10px;min-width:17px;height:17px;display:grid;place-items:center;padding:0 4px}
+</style>
+</head>
+<body>
+<header id="head"></header>
+<main id="view"></main>
+<nav id="nav"></nav>
+
+<script>
+/* ===== РЕДАКТИРУЙТЕ ЗДЕСЬ: название, баннеры, категории, товары ===== */
+var SHOP = {
+  name: "Мой магазин",
+  currency: "PLN",
+  info: ["Доставка: 1–2 дня", "Самовывоз: по договорённости", "Связь: @your_username"],
+  banners: [
+    {t: "Новинки недели", s: "Свежие поступления уже в каталоге", c: "linear-gradient(135deg,#3b4cf0,#7b3cf0)"},
+    {t: "Оптом дешевле", s: "Цена снижается от 5 штук", c: "linear-gradient(135deg,#0f9d8a,#2fbf71)"},
+    {t: "Хиты продаж", s: "То, что берут чаще всего", c: "linear-gradient(135deg,#f0803b,#e5484d)"}
+  ],
+  cats: [{id: "new", n: "Новинки", i: "✨"}, {id: "hit", n: "Хиты", i: "🔥"}, {id: "set", n: "Наборы", i: "🎁"}, {id: "acc", n: "Аксессуары", i: "🧩"}],
+  items: [
+    {id: 1, n: "Товар 1 — вариант A", cat: "new", stock: 14, tiers: [[1, 95], [5, 90], [25, 75]], c: "#3b4cf0"},
+    {id: 2, n: "Товар 1 — вариант B", cat: "new", stock: 2,  tiers: [[1, 95], [5, 90], [25, 75]], c: "#0f9d8a"},
+    {id: 3, n: "Товар 2", cat: "hit", stock: 30, tiers: [[1, 40], [10, 35]], c: "#e5484d"},
+    {id: 4, n: "Товар 3", cat: "hit", stock: 8, tiers: [[1, 60], [5, 55]], c: "#f0803b"},
+    {id: 5, n: "Набор «Старт»", cat: "set", stock: 5, tiers: [[1, 150]], c: "#7b3cf0"},
+    {id: 6, n: "Аксессуар 1", cat: "acc", stock: 50, tiers: [[1, 15], [10, 12]], c: "#2d7fd3"}
+  ]
+};
+/* ================================================================== */
+
+var tg = (window.Telegram && window.Telegram.WebApp) || null;
+if (tg) { try { tg.ready(); tg.expand(); tg.setHeaderColor('#f4f5fa'); tg.setBackgroundColor('#f4f5fa'); } catch (e) {} }
+
+var state = {tab: "catalog", cat: null, q: "", cart: {}};
+var $ = function (id) { return document.getElementById(id); };
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+function priceFor(it, q) { var p = it.tiers[0][1]; it.tiers.forEach(function (t) { if (q >= t[0]) p = t[1]; }); return p; }
+function count() { var n = 0; for (var k in state.cart) n += state.cart[k]; return n; }
+function money(v) { return v.toFixed(2) + " " + SHOP.currency; }
+function find(id) { return SHOP.items.filter(function (i) { return i.id == id; })[0]; }
+function change(id, d) {
+  var it = find(id), q = (state.cart[id] || 0) + d;
+  if (q > it.stock) q = it.stock;
+  if (q <= 0) delete state.cart[id]; else state.cart[id] = q;
+  render();
+}
+
+function qtyHtml(it) {
+  var q = state.cart[it.id] || 0;
+  return q
+    ? '<div class="qty"><button class="m" onclick="change(' + it.id + ',-1)" aria-label="Убрать одну">−</button>' + q + '<button onclick="change(' + it.id + ',1)" aria-label="Добавить ещё одну">+</button></div>'
+    : '<button class="add" onclick="change(' + it.id + ',1)" aria-label="Добавить в корзину">+</button>';
+}
+
+function card(it) {
+  var q = state.cart[it.id] || 1;
+  var tiers = it.tiers.length > 1 ? '<div class="tiers">' + it.tiers.map(function (t) { return '<span>' + t[0] + ' шт</span><b>' + t[1] + '</b>'; }).join("") + '</div>' : '';
+  return '<div class="item"><div class="pic" style="background:' + it.c + '">' + esc(it.n.charAt(0)) + '</div>' +
+    '<div class="name">' + esc(it.n) + '</div><div class="stock">В наличии: ' + it.stock + ' шт</div>' + tiers +
+    '<div class="buy"><div class="price">' + priceFor(it, q) + ' <small>' + SHOP.currency + '</small></div>' + qtyHtml(it) + '</div></div>';
+}
+
+function catalog() {
+  var list = SHOP.items.filter(function (i) {
+    return (!state.cat || i.cat === state.cat) && i.n.toLowerCase().indexOf(state.q.toLowerCase()) > -1;
+  });
+  var h = '';
+  if (!state.q) {
+    h += '<div class="banners">' + SHOP.banners.map(function (b) { return '<div class="banner" style="background:' + b.c + '"><b>' + esc(b.t) + '</b><span>' + esc(b.s) + '</span></div>'; }).join("") + '</div>';
+    h += '<h2>Категории</h2><div class="cats">' + SHOP.cats.map(function (c) {
+      return '<button class="cat' + (state.cat === c.id ? ' on' : '') + '" onclick="setCat(\'' + c.id + '\')"><i>' + c.i + '</i>' + esc(c.n) + '</button>';
+    }).join("") + '</div>';
+  }
+  h += '<h2>' + (state.cat ? esc(SHOP.cats.filter(function (c) { return c.id === state.cat; })[0].n) : 'Все товары') + '</h2>';
+  h += list.length ? '<div class="grid">' + list.map(card).join("") + '</div>' : '<div class="empty">Ничего не найдено. Измените запрос или выберите другую категорию.</div>';
+  return h;
+}
+function setCat(id) { state.cat = state.cat === id ? null : id; render(); }
+
+function cart() {
+  var ids = Object.keys(state.cart);
+  if (!ids.length) return '<div class="empty">Корзина пуста.<br>Добавьте товары из каталога.</div>';
+  var sum = 0;
+  var rows = ids.map(function (id) {
+    var it = find(id), q = state.cart[id], p = priceFor(it, q); sum += p * q;
+    return '<div class="row"><div class="pic" style="background:' + it.c + '">' + esc(it.n.charAt(0)) + '</div><div class="grow"><b>' + esc(it.n) + '</b><div class="stock">' + q + ' × ' + p + ' ' + SHOP.currency + '</div></div>' + qtyHtml(it) + '</div>';
+  }).join("");
+  return '<h2>Корзина</h2>' + rows + '<div class="total"><span>Итого</span><span>' + money(sum) + '</span></div><button class="cta" onclick="checkout()">Оформить заказ</button>';
+}
+
+function checkout() {
+  var order = Object.keys(state.cart).map(function (id) {
+    var it = find(id), q = state.cart[id];
+    return {id: it.id, name: it.n, qty: q, price: priceFor(it, q)};
+  });
+  if (tg && tg.sendData) { tg.sendData(JSON.stringify(order)); }
+  else { alert("Заказ готов к отправке. Внутри Telegram он уйдёт боту автоматически."); }
+}
+
+function info() {
+  return '<h2>Информация</h2><div class="panel">' + SHOP.info.map(function (l) { return '<p>' + esc(l) + '</p>'; }).join("") + '</div>';
+}
+function profile() {
+  var u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+  return '<h2>Профиль</h2><div class="panel"><b>' + esc(u ? (u.first_name || "Гость") : "Гость") + '</b><p>' + (u && u.username ? '@' + esc(u.username) : 'Откройте приложение в Telegram, чтобы увидеть профиль') + '</p></div>' +
+    '<div class="panel"><p>Заказов в корзине: ' + count() + '</p></div>';
+}
+
+function render() {
+  var t = state.tab;
+  $("head").innerHTML = t === "catalog"
+    ? '<div class="search"><span aria-hidden="true">🔍</span><input id="q" placeholder="Поиск по каталогу" value="' + esc(state.q) + '" aria-label="Поиск"></div>'
+    : '<h1>' + esc(SHOP.name) + '</h1>';
+  var q = $("q");
+  if (q) q.oninput = function () { state.q = q.value; var pos = q.selectionStart; $("view").innerHTML = catalog(); };
+  $("view").innerHTML = t === "catalog" ? catalog() : t === "cart" ? cart() : t === "info" ? info() : profile();
+  var n = count();
+  var tabs = [["catalog", "🏠", "Каталог"], ["cart", "🛒", "Корзина"], ["info", "ℹ️", "Инфо"], ["me", "👤", "Профиль"]];
+  $("nav").innerHTML = tabs.map(function (x) {
+    return '<button class="' + (t === x[0] ? 'on' : '') + '" onclick="go(\'' + x[0] + '\')"><span>' + x[1] + '</span>' + x[2] + (x[0] === "cart" && n ? '<i class="badge">' + n + '</i>' : '') + '</button>';
+  }).join("");
+}
+function go(t) { state.tab = t; render(); window.scrollTo(0, 0); }
+render();
+</script>
+</body>
+</html>
