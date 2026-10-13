@@ -102,6 +102,7 @@ function change(id, d) {
 }
 
 function qtyHtml(it) {
+  if (it.stock <= 0) return '<span class="stock">Нет в наличии</span>';
   var q = state.cart[it.id] || 0;
   return q
     ? '<div class="qty"><button class="m" onclick="change(' + it.id + ',-1)" aria-label="Убрать одну">−</button>' + q + '<button onclick="change(' + it.id + ',1)" aria-label="Добавить ещё одну">+</button></div>'
@@ -144,13 +145,27 @@ function cart() {
   return '<h2>Корзина</h2>' + rows + '<div class="total"><span>Итого</span><span>' + money(sum) + '</span></div><button class="cta" onclick="checkout()">Оформить заказ</button>';
 }
 
+var API = "https://jesterfull.pythonanywhere.com";
+function loadStock() {
+  fetch(API + "/products").then(function (r) { return r.json(); }).then(function (d) {
+    SHOP.items.forEach(function (it) { var s = d[it.id]; if (s) { it.stock = s.stock; it.tiers = s.tiers; } });
+    render();
+  }).catch(function () {});
+}
 function checkout() {
-  var order = Object.keys(state.cart).map(function (id) {
-    var it = find(id), q = state.cart[id];
-    return {id: it.id, name: it.n, qty: q, price: priceFor(it, q)};
-  });
-  if (tg && tg.sendData) { tg.sendData(JSON.stringify(order)); }
-  else { alert("Заказ готов к отправке. Внутри Telegram он уйдёт боту автоматически."); }
+  var items = Object.keys(state.cart).map(function (id) { return {id: Number(id), qty: state.cart[id]}; });
+  var btn = document.querySelector(".cta");
+  if (btn) { btn.disabled = true; btn.textContent = "Отправляем…"; }
+  fetch(API + "/order", {method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({initData: tg ? tg.initData : "", items: items})})
+  .then(function (r) { return r.json(); })
+  .then(function (d) {
+    if (d.ok) {
+      state.cart = {}; loadStock();
+      alert("Заказ №" + d.number + " принят. Чек отправлен в чат с ботом.");
+      if (tg) tg.close(); else render();
+    } else { alert(d.error || "Не удалось оформить заказ"); loadStock(); render(); }
+  }).catch(function () { alert("Нет связи с сервером. Попробуйте ещё раз."); render(); });
 }
 
 function info() {
@@ -178,6 +193,7 @@ function render() {
 }
 function go(t) { state.tab = t; render(); window.scrollTo(0, 0); }
 render();
+loadStock();
 </script>
 </body>
 </html>
