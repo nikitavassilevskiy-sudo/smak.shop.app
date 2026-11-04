@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
-<title>Мой магазин</title>
+<title>SMAK Shop</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -25,17 +25,17 @@ main{padding:0 16px}
 .banner span{opacity:.9;margin-top:6px}
 h2{font-size:17px;margin:22px 0 10px;font-weight:800}
 .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.cat{border:0;border-radius:16px;background:var(--card);padding:12px 4px;color:var(--ink);font:inherit;font-size:12.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid var(--line)}
+.cat{border-radius:16px;background:var(--card);padding:12px 4px;color:var(--ink);font:inherit;font-size:12.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid var(--line)}
 .cat i{font-style:normal;font-size:24px;width:44px;height:44px;border-radius:14px;background:var(--soft);display:grid;place-items:center}
 .cat.on{border-color:var(--acc);background:var(--soft)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .item{background:var(--card);border-radius:20px;border:1px solid var(--line);padding:10px;display:flex;flex-direction:column}
 .pic{aspect-ratio:1;border-radius:14px;display:grid;place-items:center;font-size:44px;font-weight:800;color:rgba(255,255,255,.9)}
-.name{font-weight:700;margin:10px 2px 2px;min-height:40px}
+.name{font-weight:700;margin:10px 2px 2px;min-height:40px;overflow-wrap:anywhere}
 .stock{font-size:12px;color:var(--mute);margin:0 2px 6px}
 .tiers{font-size:12px;color:var(--mute);border-top:1px solid var(--line);margin:4px 2px 8px;padding-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:2px 8px}
 .tiers b{color:var(--ink)}
-.buy{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding:0 2px}
+.buy{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding:0 2px;gap:6px}
 .price{font-size:18px;font-weight:800}
 .price small{font-size:11px;color:var(--mute);font-weight:700}
 .add,.qty button{width:36px;height:36px;border-radius:12px;border:0;background:var(--acc);color:var(--acc-ink);font-size:20px;font-weight:700;line-height:1}
@@ -47,41 +47,59 @@ h2{font-size:17px;margin:22px 0 10px;font-weight:800}
 .row .grow{flex:1;min-width:0}
 .total{display:flex;justify-content:space-between;font-size:18px;font-weight:800;margin:16px 4px}
 .cta{width:100%;height:50px;border:0;border-radius:16px;background:var(--acc);color:var(--acc-ink);font:inherit;font-weight:800;font-size:16px}
+.cta:disabled{opacity:.6}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px}
 .panel p{margin:4px 0;color:var(--mute)}
 nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border:1px solid var(--line);border-radius:26px;display:flex;justify-content:space-around;padding:6px;box-shadow:0 8px 28px rgba(20,25,50,.14);z-index:6}
 nav button{flex:1;border:0;background:none;color:var(--mute);font:inherit;font-size:11px;font-weight:700;height:50px;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative}
 nav button span{font-size:20px;line-height:1}
 nav button.on{background:var(--acc);color:var(--acc-ink)}
-.badge{position:absolute;top:2px;right:calc(50% - 26px);background:#e5484d;color:#fff;border-radius:10px;font-size:10px;min-width:17px;height:17px;display:grid;place-items:center;padding:0 4px}
+.badge{position:absolute;top:2px;right:calc(50% - 26px);background:#e5484d;color:#fff;border-radius:10px;font-size:10px;min-width:17px;height:17px;display:grid;place-items:center;padding:0 4px;font-style:normal}
+#age{position:fixed;inset:0;z-index:20;background:var(--bg);display:none;align-items:center;justify-content:center;padding:24px}
+#age .box{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px 22px;max-width:360px;width:100%;text-align:center}
+#age h2{margin:0 0 8px;font-size:22px}
+#age p{color:var(--mute);margin:0 0 20px}
+#age .cta{margin-bottom:10px}
+#age .no{background:var(--soft);color:var(--acc)}
 </style>
 </head>
 <body>
+<div id="age"><div class="box">
+  <div style="font-size:44px">🔞</div>
+  <h2>Вам есть 18 лет?</h2>
+  <p>Товары магазина содержат никотин и продаются только совершеннолетним.</p>
+  <button class="cta" id="ageYes">Да, мне есть 18</button>
+  <button class="cta no" id="ageNo">Нет</button>
+</div></div>
 <header id="head"></header>
 <main id="view"></main>
 <nav id="nav"></nav>
 
 <script>
-/* ===== РЕДАКТИРУЙТЕ ЗДЕСЬ: название, баннеры, категории, товары ===== */
+/* ===== РЕДАКТИРУЙТЕ ЗДЕСЬ: название, баннеры, категории, тексты ===== */
 var SHOP = {
-  name: "Мой магазин",
+  name: "SMAK Shop",
   currency: "PLN",
-  info: ["Доставка: 1–2 дня", "Самовывоз: по договорённости", "Связь: @your_username"],
-  banners: [
-    {t: "Новинки недели", s: "Свежие поступления уже в каталоге", c: "linear-gradient(135deg,#3b4cf0,#7b3cf0)"},
-    {t: "Оптом дешевле", s: "Цена снижается от 5 штук", c: "linear-gradient(135deg,#0f9d8a,#2fbf71)"},
-    {t: "Хиты продаж", s: "То, что берут чаще всего", c: "linear-gradient(135deg,#f0803b,#e5484d)"}
+  info: [
+    "Доставка и самовывоз: по договорённости с продавцом",
+    "Связь: через бота @smak_1_shop_bot",
+    "Продукция содержит никотин. Только для лиц 18+."
   ],
-  cats: [{id: "new", n: "Новинки", i: "✨"}, {id: "hit", n: "Хиты", i: "🔥"}, {id: "set", n: "Наборы", i: "🎁"}, {id: "acc", n: "Аксессуары", i: "🧩"}],
-  items: [
-    {id: 1, n: "Товар 1 — вариант A", cat: "new", stock: 14, tiers: [[1, 95], [5, 90], [25, 75]], c: "#3b4cf0"},
-    {id: 2, n: "Товар 1 — вариант B", cat: "new", stock: 2,  tiers: [[1, 95], [5, 90], [25, 75]], c: "#0f9d8a"},
-    {id: 3, n: "Товар 2", cat: "hit", stock: 30, tiers: [[1, 40], [10, 35]], c: "#e5484d"},
-    {id: 4, n: "Товар 3", cat: "hit", stock: 8, tiers: [[1, 60], [5, 55]], c: "#f0803b"},
-    {id: 5, n: "Набор «Старт»", cat: "set", stock: 5, tiers: [[1, 150]], c: "#7b3cf0"},
-    {id: 6, n: "Аксессуар 1", cat: "acc", stock: 50, tiers: [[1, 15], [10, 12]], c: "#2d7fd3"}
-  ]
+  banners: [
+    {t: "Весь ассортимент", s: "Жидкости, одноразки, картриджи и снюс", c: "linear-gradient(135deg,#3b4cf0,#7b3cf0)"},
+    {t: "Наличие в реальном времени", s: "Остатки обновляются после каждого заказа", c: "linear-gradient(135deg,#0f9d8a,#2fbf71)"},
+    {t: "Заказ в пару касаний", s: "Чек придёт в чат с ботом", c: "linear-gradient(135deg,#f0803b,#e5484d)"}
+  ],
+  cats: [
+    {id: "liq", n: "Жидкости", i: "💧"},
+    {id: "dis", n: "Одноразки", i: "💨"},
+    {id: "cart", n: "Картриджи", i: "🔋"},
+    {id: "snus", n: "Снюс", i: "🧊"}
+  ],
+  /* Список товаров генерируется скриптом tools/sync_catalog.py из backend/products.json — не правьте вручную */
+  items: /*ITEMS_START*/[{"id": 1, "n": "ELF LIQ", "cat": "liq", "stock": 127, "tiers": [[1, 45], [5, 40]], "c": "#3b4cf0"}, {"id": 2, "n": "VOZOL SALT PRIME", "cat": "liq", "stock": 37, "tiers": [[1, 45], [5, 40]], "c": "#2d7fd3"}, {"id": 3, "n": "HQD", "cat": "liq", "stock": 51, "tiers": [[1, 45], [5, 40]], "c": "#5b6cf5"}, {"id": 4, "n": "VOZOL Gear Ice & Sweet 50K", "cat": "dis", "stock": 7, "tiers": [[1, 100]], "c": "#0f9d8a"}, {"id": 5, "n": "VOZOL Star Click 50K", "cat": "dis", "stock": 16, "tiers": [[1, 100]], "c": "#2fbf71"}, {"id": 6, "n": "ELF BAR Lush King 40 000", "cat": "dis", "stock": 1, "tiers": [], "c": "#1c7293"}, {"id": 7, "n": "ELFBAR BC45000 Puffs Dual Coil", "cat": "dis", "stock": 34, "tiers": [[1, 80]], "c": "#0b7a6b"}, {"id": 8, "n": "XROS 0.4 OHM (3 ml)", "cat": "cart", "stock": 6, "tiers": [[1, 20]], "c": "#f0803b", "deal": {"with": "liq", "price": 15}}, {"id": 9, "n": "XROS 0.6 OHM (2 ml)", "cat": "cart", "stock": 7, "tiers": [[1, 20]], "c": "#e5484d", "deal": {"with": "liq", "price": 15}}, {"id": 10, "n": "XROS 0.8 OHM (3 ml)", "cat": "cart", "stock": 7, "tiers": [[1, 20]], "c": "#d9622b", "deal": {"with": "liq", "price": 15}}, {"id": 11, "n": "XROS 0.8 OHM (2 ml)", "cat": "cart", "stock": 12, "tiers": [[1, 20]], "c": "#f09a3b", "deal": {"with": "liq", "price": 15}}, {"id": 12, "n": "ICEBERG Ultra", "cat": "snus", "stock": 22, "tiers": [[1, 30]], "c": "#7b3cf0"}, {"id": 13, "n": "CUBA Black + Cuba Coca Leaf", "cat": "snus", "stock": 7, "tiers": [[1, 30]], "c": "#9b5cf5"}, {"id": 14, "n": "BARON", "cat": "snus", "stock": 2, "tiers": [[1, 30]], "c": "#5f2bc0"}, {"id": 15, "n": "FEDRS Ice Cool X-strong", "cat": "snus", "stock": 6, "tiers": [[1, 30]], "c": "#b07af5"}, {"id": 16, "n": "K#rwa Collection Max", "cat": "snus", "stock": 2, "tiers": [[1, 30]], "c": "#6a35d6"}, {"id": 17, "n": "JOL Nothing Fancy", "cat": "snus", "stock": 1, "tiers": [[1, 30]], "c": "#8a4cf2"}, {"id": 18, "n": "EGL", "cat": "snus", "stock": 8, "tiers": [[1, 30]], "c": "#4e22a8"}]/*ITEMS_END*/
 };
+var API = "https://jesterfull.pythonanywhere.com";
 /* ================================================================== */
 
 var tg = (window.Telegram && window.Telegram.WebApp) || null;
@@ -90,10 +108,21 @@ if (tg) { try { tg.ready(); tg.expand(); tg.setHeaderColor('#f4f5fa'); tg.setBac
 var state = {tab: "catalog", cat: null, q: "", cart: {}};
 var $ = function (id) { return document.getElementById(id); };
 function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
-function priceFor(it, q) { var p = it.tiers[0][1]; it.tiers.forEach(function (t) { if (q >= t[0]) p = t[1]; }); return p; }
+function priced(it) { return it.tiers && it.tiers.length > 0; }
+function priceFor(it, q) {
+  var p = it.tiers[0][1]; it.tiers.forEach(function (t) { if (q >= t[0]) p = t[1]; });
+  if (dealOn(it) && it.deal.price < p) p = it.deal.price;
+  return p;
+}
+function dealOn(it) {
+  if (!it.deal) return false;
+  return Object.keys(state.cart).some(function (id) { var o = find(id); return o && o.cat === it.deal.with; });
+}
+function dealCat(it) { return SHOP.cats.filter(function (c) { return c.id === it.deal.with; })[0].n.toLowerCase(); }
 function count() { var n = 0; for (var k in state.cart) n += state.cart[k]; return n; }
 function money(v) { return v.toFixed(2) + " " + SHOP.currency; }
 function find(id) { return SHOP.items.filter(function (i) { return i.id == id; })[0]; }
+function notify(msg) { if (tg && tg.showAlert) { try { tg.showAlert(msg); return; } catch (e) {} } alert(msg); }
 function change(id, d) {
   var it = find(id), q = (state.cart[id] || 0) + d;
   if (q > it.stock) q = it.stock;
@@ -111,10 +140,13 @@ function qtyHtml(it) {
 
 function card(it) {
   var q = state.cart[it.id] || 1;
-  var tiers = it.tiers.length > 1 ? '<div class="tiers">' + it.tiers.map(function (t) { return '<span>' + t[0] + ' шт</span><b>' + t[1] + '</b>'; }).join("") + '</div>' : '';
+  var tiers = it.tiers.length > 1 ? '<div class="tiers">' + it.tiers.map(function (t) { return '<span>от ' + t[0] + ' шт</span><b>' + t[1] + '</b>'; }).join("") + '</div>' : '';
+  var price = priced(it) ? priceFor(it, q) + ' <small>' + SHOP.currency + '</small>' : '<small>Цена уточняется</small>';
+  var stock = it.stock > 0 ? 'В наличии: ' + it.stock + ' шт' : 'Нет в наличии';
+  if (it.deal && priced(it)) stock += '<br><b>' + it.deal.price + ' ' + SHOP.currency + '</b> при покупке: ' + dealCat(it);
   return '<div class="item"><div class="pic" style="background:' + it.c + '">' + esc(it.n.charAt(0)) + '</div>' +
-    '<div class="name">' + esc(it.n) + '</div><div class="stock">В наличии: ' + it.stock + ' шт</div>' + tiers +
-    '<div class="buy"><div class="price">' + priceFor(it, q) + ' <small>' + SHOP.currency + '</small></div>' + qtyHtml(it) + '</div></div>';
+    '<div class="name">' + esc(it.n) + '</div><div class="stock">' + stock + '</div>' + tiers +
+    '<div class="buy"><div class="price">' + price + '</div>' + (priced(it) ? qtyHtml(it) : '') + '</div></div>';
 }
 
 function catalog() {
@@ -145,10 +177,14 @@ function cart() {
   return '<h2>Корзина</h2>' + rows + '<div class="total"><span>Итого</span><span>' + money(sum) + '</span></div><button class="cta" onclick="checkout()">Оформить заказ</button>';
 }
 
-var API = "https://jesterfull.pythonanywhere.com";
 function loadStock() {
   fetch(API + "/products").then(function (r) { return r.json(); }).then(function (d) {
-    SHOP.items.forEach(function (it) { var s = d[it.id]; if (s) { it.stock = s.stock; it.tiers = s.tiers; } });
+    SHOP.items.forEach(function (it) { var s = d[it.id]; if (s) { it.stock = s.stock; it.tiers = s.tiers; it.deal = s.deal; } });
+    Object.keys(state.cart).forEach(function (id) {
+      var it = find(id);
+      if (!it || !priced(it) || it.stock <= 0) delete state.cart[id];
+      else if (state.cart[id] > it.stock) state.cart[id] = it.stock;
+    });
     render();
   }).catch(function () {});
 }
@@ -162,10 +198,10 @@ function checkout() {
   .then(function (d) {
     if (d.ok) {
       state.cart = {}; loadStock();
-      alert("Заказ №" + d.number + " принят. Чек отправлен в чат с ботом.");
+      notify("Заказ №" + d.number + " принят. Чек отправлен в чат с ботом.");
       if (tg) tg.close(); else render();
-    } else { alert(d.error || "Не удалось оформить заказ"); loadStock(); render(); }
-  }).catch(function () { alert("Нет связи с сервером. Попробуйте ещё раз."); render(); });
+    } else { notify(d.error || "Не удалось оформить заказ"); loadStock(); render(); }
+  }).catch(function () { notify("Нет связи с сервером. Попробуйте ещё раз."); render(); });
 }
 
 function info() {
@@ -174,7 +210,7 @@ function info() {
 function profile() {
   var u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
   return '<h2>Профиль</h2><div class="panel"><b>' + esc(u ? (u.first_name || "Гость") : "Гость") + '</b><p>' + (u && u.username ? '@' + esc(u.username) : 'Откройте приложение в Telegram, чтобы увидеть профиль') + '</p></div>' +
-    '<div class="panel"><p>Заказов в корзине: ' + count() + '</p></div>';
+    '<div class="panel"><p>Товаров в корзине: ' + count() + '</p></div>';
 }
 
 function render() {
@@ -183,7 +219,7 @@ function render() {
     ? '<div class="search"><span aria-hidden="true">🔍</span><input id="q" placeholder="Поиск по каталогу" value="' + esc(state.q) + '" aria-label="Поиск"></div>'
     : '<h1>' + esc(SHOP.name) + '</h1>';
   var q = $("q");
-  if (q) q.oninput = function () { state.q = q.value; var pos = q.selectionStart; $("view").innerHTML = catalog(); };
+  if (q) q.oninput = function () { state.q = q.value; $("view").innerHTML = catalog(); };
   $("view").innerHTML = t === "catalog" ? catalog() : t === "cart" ? cart() : t === "info" ? info() : profile();
   var n = count();
   var tabs = [["catalog", "🏠", "Каталог"], ["cart", "🛒", "Корзина"], ["info", "ℹ️", "Инфо"], ["me", "👤", "Профиль"]];
@@ -192,8 +228,15 @@ function render() {
   }).join("");
 }
 function go(t) { state.tab = t; render(); window.scrollTo(0, 0); }
-render();
-loadStock();
+
+/* Проверка возраста 18+ */
+function ageOk() { try { return localStorage.getItem("age18") === "1"; } catch (e) { return false; } }
+function startShop() { $("age").style.display = "none"; render(); loadStock(); }
+if (ageOk()) { startShop(); } else {
+  $("age").style.display = "flex";
+  $("ageYes").onclick = function () { try { localStorage.setItem("age18", "1"); } catch (e) {} startShop(); };
+  $("ageNo").onclick = function () { if (tg) tg.close(); else document.body.innerHTML = '<div class="empty">Доступ закрыт.</div>'; };
+}
 </script>
 </body>
 </html>
